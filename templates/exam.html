@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Portal</title>
+    <link rel="stylesheet" href="/static/css/global.css">
+</head>
+<body>
+    <div class="glass-container large" style="position: relative;">
+        <!-- Timer Display -->
+        <div id="timerDisplay" style="position: absolute; top: 30px; right: 30px; font-weight: 600; background: rgba(255, 0, 0, 0.2); padding: 8px 16px; border-radius: 8px; color: #ff8a8a;">
+            Time Left: <span id="time">30:00</span>
+        </div>
+
+        <h2>Examination</h2>
+        
+        <form action="/check" method="POST" id="examForm">
+            {% for quest in ques %}
+            <div class="question-block">
+                <div class="question-title">{{loop.index}}. {{quest.que}}</div>
+                
+                {% if quest.q_type == 'mcq' %}
+                <div class="radio-group">
+                    <label><input type="radio" name="{{quest.id}}" value="1" required> {{quest.op1}}</label>
+                    <label><input type="radio" name="{{quest.id}}" value="2"> {{quest.op2}}</label>
+                    <label><input type="radio" name="{{quest.id}}" value="3"> {{quest.op3}}</label>
+                    <label><input type="radio" name="{{quest.id}}" value="4"> {{quest.op4}}</label>
+                </div>
+                {% elif quest.q_type == 'tf' %}
+                <div class="radio-group">
+                    <label><input type="radio" name="{{quest.id}}" value="true" required> True</label>
+                    <label><input type="radio" name="{{quest.id}}" value="false"> False</label>
+                </div>
+                {% elif quest.q_type == 'fib' %}
+                <div class="form-group" style="margin-top: 10px;">
+                    <input type="text" name="{{quest.id}}" placeholder="Type your answer here..." required style="background: rgba(0,0,0,0.15);">
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+            
+            <button type="submit" class="btn">Submit Exam</button>
+        </form>
+    </div>
+
+    <!-- Timer Script -->
+    <script>
+        // Set exam duration to 30 minutes (1800 seconds)
+        let timeInSecs = 30 * 60;
+        let display = document.querySelector('#time');
+        
+        let timer = setInterval(function () {
+            let minutes = parseInt(timeInSecs / 60, 10);
+            let seconds = parseInt(timeInSecs % 60, 10);
+
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+
+            display.textContent = minutes + ":" + seconds;
+
+            if (--timeInSecs < 0) {
+                clearInterval(timer);
+                alert("Time is up! Submitting exam...");
+                document.getElementById('examForm').submit();
+            }
+        }, 1000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+    <link rel="stylesheet" href="/static/css/global.css">
+    <style>
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .history-table th, .history-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .history-table th {
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+        .history-table tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .nav-links {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+        .nav-links a {
+            color: var(--accent);
+            text-decoration: none;
+            margin-left: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="glass-container large">
+        <div class="nav-links">
+            <a href="/exam">Take Exam</a>
+            <a href="/logout">Logout</a>
+        </div>
+        
+        <h2>Student Dashboard</h2>
+        <p style="text-align: center; color: var(--text-secondary);">Your Exam History</p>
+        
+        {% if history %}
+        <table class="history-table">
+            <thead>
+                <tr>
+                    <th>Date & Time</th>
+                    <th>Score</th>
+                    <th>Total</th>
+                    <th>Percentage</th>
+                    <th>Certificate</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for res in history %}
+                <tr>
+                    <td>{{ res.date.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                    <td><strong style="color: var(--accent);">{{ res.score }}</strong></td>
+                    <td>{{ res.total }}</td>
+                    <td>{{ "%.1f"|format((res.score / res.total) * 100) if res.total > 0 else 0 }}%</td>
+                    <td>
+                        {% if res.total > 0 and (res.score / res.total) >= 0.5 %}
+                            <a href="/certificate/{{ res.id }}" style="color: #10b981; text-decoration: none; font-weight: 600;">Download</a>
+                        {% else %}
+                            <span style="color: #ef4444;">Not eligible</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div style="text-align: center; padding: 40px; color: var(--text-secondary);">
+            No exam history found.
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
